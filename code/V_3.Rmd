@@ -1,0 +1,186 @@
+---
+title: "V_3"
+author: "Ruby"
+date: "2024-01-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##load package
+```{r}
+library(ggplot2)
+library(dplyr)
+library(car)
+library(mfp)
+library(lspline)
+library(rms)
+```
+
+
+##read data
+```{r}
+dt <- read.csv("../clean/clean_dt.csv")
+```
+
+
+
+```{r}
+hist(dt$FFQ0102)
+ggplot(dt, aes(x = as.factor(FFQ0102), y = BMXBMI)) +
+    geom_boxplot() +
+    labs(title = "Relationship between BMI and Potato Chips Consumption",
+         x = "Grouped Potato Chips Consumption",
+         y = "BMI") 
+
+dt <- subset(dt, BMXBMI < 100)
+```
+
+
+##Linear Model
+```{r}
+model_linear <- lm(BMXBMI~FFQ0102, data = dt)
+summary(model_linear)
+```
+
+```{r}
+dt$linear_pred <- predict(model_linear)
+mean_CI <- dt %>%
+  group_by(FFQ0102) %>%
+  summarise(
+    Mean = mean(BMXBMI, na.rm = TRUE),
+    Lower = Mean - qt(0.975, df=n()-1) * sd(BMXBMI) / sqrt(n()),
+    Upper = Mean + qt(0.975, df=n()-1) * sd(BMXBMI) / sqrt(n())
+  )
+
+
+
+ggplot() +
+  geom_point(data = mean_CI, aes(x = FFQ0102, y = Mean)) +
+  geom_errorbar(data = mean_CI, aes(x = FFQ0102, ymin = Lower, ymax = Upper), width = 0.2) +
+  geom_line(data = dt, aes(x = FFQ0102, y = linear_pred), color = 'red') +
+  labs(title = "BMI by Potato Chips Consumption with Predicted Linear Relationship",
+       x = "Potato Chips Consumption Category",
+       y = "BMI") +
+  theme_minimal()
+```
+
+
+##Quadratic Model
+```{r}
+dt$FFQ0102_sq <- dt$FFQ0102^2
+model_quad <- lm(BMXBMI~FFQ0102 + FFQ0102_sq, data = dt)
+summary(model_quad)
+```
+
+```{asis}
+Quadratic term is very small with large p value, so we have strong evidence to reject this.
+```
+
+```{r}
+dt$quad_pred <- predict(model_quad)
+
+
+ggplot() +
+  geom_point(data = mean_CI, aes(x = FFQ0102, y = Mean)) +
+  geom_errorbar(data = mean_CI, aes(x = FFQ0102, ymin = Lower, ymax = Upper), width = 0.2) +
+  geom_line(data = dt, aes(x = FFQ0102, y = linear_pred), color = 'red') +
+  geom_line(data = dt, aes(x = FFQ0102, y = quad_pred), color = 'blue') +
+  labs(title = "BMI by Potato Chips Consumption with Predicted Linear Relationship",
+       x = "Potato Chips Consumption Category",
+       y = "BMI") +
+  theme_minimal()
+```
+
+```{r}
+model_fp <- mfp(BMXBMI ~ fp(FFQ0102), data = dt, family = gaussian())
+summary(model_fp)
+```
+
+```{r}
+dt$fp_pred <- predict(model_fp)
+
+
+ggplot() +
+  geom_point(data = mean_CI, aes(x = FFQ0102, y = Mean)) +
+  geom_errorbar(data = mean_CI, aes(x = FFQ0102, ymin = Lower, ymax = Upper), width = 0.2) +
+  geom_line(data = dt, aes(x = FFQ0102, y = linear_pred), color = 'red') +
+  geom_line(data = dt, aes(x = FFQ0102, y = quad_pred), color = 'blue') +
+  geom_line(data = dt, aes(x = FFQ0102, y = fp_pred), color = 'green') +
+  labs(title = "BMI by Potato Chips Consumption with Predicted Linear Relationship",
+       x = "Potato Chips Consumption Category",
+       y = "BMI") +
+  theme_minimal()
+```
+
+```{r}
+model_spline <- lm(BMXBMI ~ lspline(FFQ0102, knots=c(2,9)), data=dt)
+summary(model_spline)
+```
+
+```{r}
+dt$lsp_pred <- predict(model_spline)
+
+
+ggplot() +
+  geom_point(data = mean_CI, aes(x = FFQ0102, y = Mean)) +
+  geom_errorbar(data = mean_CI, aes(x = FFQ0102, ymin = Lower, ymax = Upper), width = 0.2) +
+  geom_line(data = dt, aes(x = FFQ0102, y = linear_pred), color = 'red') +
+  geom_line(data = dt, aes(x = FFQ0102, y = quad_pred), color = 'blue') +
+  geom_line(data = dt, aes(x = FFQ0102, y = fp_pred), color = 'green') +
+   geom_line(data = dt, aes(x = FFQ0102, y = lsp_pred), color = 'yellow') +
+  labs(title = "BMI by Potato Chips Consumption with Predicted Linear Relationship",
+       x = "Potato Chips Consumption Category",
+       y = "BMI") +
+  theme_minimal()
+```
+
+```{r}
+model_csp <- lm(BMXBMI~rcs(FFQ0102, knots = c(2, 9, 10)), data = dt)
+summary(model_csp)
+```
+
+```{r}
+dt$csp_pred <- predict(model_csp)
+colors1 <- c("Linear" = "red", "Quadratic" = "blue", "FP" = "green", "Linearspline" = "yellow", "cubic_spline" = "purple")
+
+ggplot() +
+  geom_point(data = mean_CI, aes(x = FFQ0102, y = Mean)) +
+  geom_errorbar(data = mean_CI, aes(x = FFQ0102, ymin = Lower, ymax = Upper), width = 0.2) +
+  geom_line(data = dt, aes(x = FFQ0102, y = linear_pred, color = "Linear")) +
+  geom_line(data = dt, aes(x = FFQ0102, y = quad_pred, color = "Quadratic")) +
+  geom_line(data = dt, aes(x = FFQ0102, y = fp_pred, color = "FP")) +
+   geom_line(data = dt, aes(x = FFQ0102, y = lsp_pred, color = "Linearspline")) +
+  geom_line(data = dt, aes(x = FFQ0102, y = csp_pred, color = "cubic_spline")) +
+  labs(title = "BMI by Potato Chips Consumption with Predicted Relationship",
+       x = "Potato Chips Consumption Category",
+       y = "BMI") +
+  theme_minimal() +
+   scale_color_manual(values = colors1)
+```
+
+```{r}
+cbind(AIC(model_linear), BIC(model_linear))
+cbind(AIC(model_quad), BIC(model_quad))
+cbind(AIC(model_fp), BIC(model_fp))
+cbind(AIC(model_spline), BIC(model_spline))
+cbind(AIC(model_csp), BIC(model_csp))
+
+```
+
+```{asis}
+From AIC and BIC, fractional polynomial is the best fit
+```
+
+## I think poverty income ratio maybe a confounder, so I add it in my model to see what happen
+```{r}
+model_fp_confounder <- mfp(BMXBMI ~ fp(FFQ0102) + INDFMPIR, data = dt, family = gaussian())
+summary(model_fp_confounder)
+```
+
+```{r}
+write.csv(dt,"../clean/bmi_model_dt.csv", row.names = FALSE)
+```
+
