@@ -22,7 +22,7 @@ library(rms)
 
 ##read data
 ```{r}
-dt <- read.csv("../clean/clean_dt.csv")
+dt <- read.csv("../clean/clean.csv")
 ```
 
 
@@ -180,7 +180,4 @@ model_fp_confounder <- mfp(BMXBMI ~ fp(FFQ0102) + INDFMPIR, data = dt, family = 
 summary(model_fp_confounder)
 ```
 
-```{r}
-write.csv(dt,"../clean/bmi_model_dt.csv", row.names = FALSE)
-```
 

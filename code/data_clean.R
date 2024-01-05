@@ -14,16 +14,24 @@ head(dt_demo)
 dt_ffq <- read.csv("../raw/FFQRAW_D.csv")
 head(dt_ffq)
 
- 
+#combine three data sets
 research_dt <- merge(dt_bmi, dt_demo, by = "SEQN")
 research_dt <- merge(research_dt, dt_ffq, by = "SEQN")
 head(research_dt)
 
+#slect the data I want to use
 research_dt_clean <- subset(research_dt, select=c("SEQN", "BMXBMI", "INDFMPIR", "FFQ0102"))
 
+#remove all rows for which frequency of eating potato chips is blank or error
 research_dt_clean <- subset(research_dt_clean, FFQ0102 != "88" & FFQ0102 != "99")
+
+#remove all NA rows
 research_dt_clean <- na.omit(research_dt_clean)
 table(research_dt_clean$FFQ0102)
 
-write.csv(research_dt_clean,"../clean/clean_dt.csv", row.names = FALSE)
+#remove the outlier with BMI = 130
+research_dt_clean <- subset(research_dt_clean, BMXBMI < 100)
+
+#output clean data
+write.csv(research_dt_clean,"../clean/clean.csv", row.names = FALSE)
 
