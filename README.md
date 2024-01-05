@@ -14,7 +14,3 @@ To run this app, you will need R and the following R packages: `shiny`, `dplyr`,
 
 ```R
 install.packages(c("shiny", "dplyr", "plotly", "mfp"))
-
-
-## Installation
-Download the code from this repository and open the R Markdown file (V_3.Rmd) in RStudio. Ensure that the data file clean.csv is in the correct directory as specified in the code.
