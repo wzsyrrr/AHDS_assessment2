@@ -1,21 +1,21 @@
 # 3D BMI Relationship Visualization App
 
 ## Compendium
-|-- Desktop
-    |-- AHDS_assessment2_report_2490854.docx
-    |-- README.md
-    |-- clean
-    |   |-- clean.csv
-    |-- code
-    |   |-- V_3.Rmd
-    |   |-- ahds-summative-data-prep.R
-    |   |-- data_clean.R
-    |-- raw
-    |   |-- BMI.csv
-    |   |-- DEMO_D.csv
-    |   |-- FFQRAW_D.csv
-    |-- visualisation
-        |-- bmi_app.R
+|-- Desktop       <br />
+    |-- AHDS_assessment2_report_2490854.docx <br />
+    |-- README.md <br />
+    |-- clean <br />
+    |   |-- clean.csv <br />
+    |-- code <br />
+    |   |-- V_3.Rmd <br />
+    |   |-- ahds-summative-data-prep.R <br />
+    |   |-- data_clean.R <br />
+    |-- raw <br />
+    |   |-- BMI.csv <br />
+    |   |-- DEMO_D.csv <br />
+    |   |-- FFQRAW_D.csv <br />
+    |-- visualisation <br />
+        |-- bmi_app.R <br />
 
 
 ## Introduction
