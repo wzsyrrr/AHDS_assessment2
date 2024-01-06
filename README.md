@@ -1,5 +1,23 @@
 # 3D BMI Relationship Visualization App
 
+## Compendium
+|-- Desktop
+    |-- AHDS_assessment2_report_2490854.docx
+    |-- README.md
+    |-- clean
+    |   |-- clean.csv
+    |-- code
+    |   |-- V_3.Rmd
+    |   |-- ahds-summative-data-prep.R
+    |   |-- data_clean.R
+    |-- raw
+    |   |-- BMI.csv
+    |   |-- DEMO_D.csv
+    |   |-- FFQRAW_D.csv
+    |-- visualisation
+        |-- bmi_app.R
+
+
 ## Introduction
 This Shiny app visualizes the relationship between Body Mass Index (BMI), poverty income ratio (PIR), and the frequency of eating potato chips using a 3D plot. The app allows users to interactively explore data and input specific values to predict BMI based on the selected frequency of chip consumption and poverty income ratio.
 
