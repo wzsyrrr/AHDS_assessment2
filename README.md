@@ -32,3 +32,4 @@ To run this app, you will need R and the following R packages: `shiny`, `dplyr`,
 
 ```R
 install.packages(c("shiny", "dplyr", "plotly", "mfp"))
+
